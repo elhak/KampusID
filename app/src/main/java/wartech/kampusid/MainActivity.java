@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
         emailTxt = (EditText) findViewById(R.id.txtEmail);
         addressTxt = (EditText) findViewById(R.id.txtAddress);
         kampusListView = (ListView) findViewById(R.id.listKampus);
-        kampusImageImgView = (ImageView) findViewById(R.id.ivKampusImage);
+        kampusImageImgView = (ImageView) findViewById(R.id.imgKampusView);
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
@@ -88,14 +88,13 @@ public class MainActivity extends ActionBarActivity {
 
         kampusImageImgView.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Image"), 1);
             }
-
-            });
+        });
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data)

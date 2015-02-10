@@ -27,12 +27,6 @@
                 android:layout_height="fill_parent">
 
                 <LinearLayout
-                    android:id="@+id/tabKampusList"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical"></LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/tabCreator"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -46,6 +40,14 @@
                         android:id="@+id/lblCreatorTitle"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp" />
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/imgKampusView"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/icon" />
 
                     <EditText
                         android:layout_width="fill_parent"
@@ -93,23 +95,30 @@
                         android:enabled="false" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/tabKampusList"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+                    <ListView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/listKampus" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="Kampus List"
+                        android:id="@+id/textView"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp" />
+                </LinearLayout>
+
             </FrameLayout>
 
         </LinearLayout>
     </TabHost>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Kampus List"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="15dp" />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/listKampus" />
 
 </LinearLayout>
