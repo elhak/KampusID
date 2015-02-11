@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
     List<ContactActivity> Contact = new ArrayList<ContactActivity>();
     private ListView kampusListView;
     private ImageView kampusImageImgView;
-    Uri imageURI = null;
+    Uri ImageURI = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Contact.add(new ContactActivity(nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), imageURI));
+                Contact.add(new ContactActivity(nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), ImageURI));
                 PopulateList();
                 Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + " Has Been Added", Toast.LENGTH_SHORT).show();
             }
@@ -89,21 +89,18 @@ public class MainActivity extends ActionBarActivity {
         kampusImageImgView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Image"), 1);
+               Intent intent = new Intent();
+               intent.setType("image/*");
+               intent.setAction(Intent.ACTION_GET_CONTENT);
+               startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
             }
         });
     }
 
-    public void onActivityResult(int reqCode, int resCode, Intent data)
-    {
-        if(resCode == RESULT_OK)
-        {
-            if(reqCode == 1)
-            {
-                imageURI = data.getData();
+    public void onActivityResult(int reqCode, int resCode, Intent data){
+        if(resCode == RESULT_OK){
+            if(reqCode == 1){
+                ImageURI = data.getData();
                 kampusImageImgView.setImageURI(data.getData());
             }
         }
@@ -132,6 +129,7 @@ public class MainActivity extends ActionBarActivity {
             ContactActivity currentContact = Contact.get(position);
 
             TextView name,phone,email,address;
+            ImageView kampusImage;
             name = (TextView) view.findViewById(R.id.kampusName);
             name.setText(currentContact.getName());
             phone = (TextView) view.findViewById(R.id.phoneNumber);
@@ -140,8 +138,9 @@ public class MainActivity extends ActionBarActivity {
             email.setText(currentContact.getEmail());
             address = (TextView) view.findViewById(R.id.cAddress);
             address.setText(currentContact.getAddress());
-            ImageView ivKampusImage = (ImageView) view.findViewById(R.id.ivKampusImage);
-            ivKampusImage.setImageURI(currentContact.getimageURI());
+            kampusImage = (ImageView) view.findViewById(R.id.KampusImage);
+            kampusImage.setImageURI(currentContact.getImage());
+
 
             return view;
         }

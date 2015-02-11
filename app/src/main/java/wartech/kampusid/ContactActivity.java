@@ -8,15 +8,15 @@ import android.net.Uri;
 public class ContactActivity {
 
     private String _name,_phone,_email,_address;
-    private Uri _imageURI;
+    Uri _image;
 
-    public ContactActivity(String name, String phone, String email, String address, Uri imageURI)
+    public ContactActivity(String name, String phone, String email, String address, Uri image)
     {
         _name = name;
         _phone = phone;
         _email = email;
         _address = address;
-        _imageURI = imageURI;
+        _image = image;
     }
 
     public String getName()
@@ -39,8 +39,8 @@ public class ContactActivity {
         return _address;
     }
 
-    public Uri getimageURI()
+    public Uri getImage()
     {
-        return _imageURI;
+        return _image;
     }
 }

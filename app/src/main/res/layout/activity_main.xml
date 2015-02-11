@@ -115,10 +115,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="15dp" />
                 </LinearLayout>
-
             </FrameLayout>
-
         </LinearLayout>
     </TabHost>
-
 </LinearLayout>
