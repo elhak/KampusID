@@ -31,7 +31,8 @@ public class MainActivity extends ActionBarActivity {
     List<ContactActivity> Contact = new ArrayList<ContactActivity>();
     private ListView kampusListView;
     private ImageView kampusImageImgView;
-    Uri ImageURI = null;
+    Uri ImageURI = Uri.parse("android.resource://wartech.kampusid/drawable/icon.png");
+    DatabaseHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class MainActivity extends ActionBarActivity {
         addressTxt = (EditText) findViewById(R.id.txtAddress);
         kampusListView = (ListView) findViewById(R.id.listKampus);
         kampusImageImgView = (ImageView) findViewById(R.id.imgKampusView);
+        dbHandler = new DatabaseHandler(getApplicationContext());
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
@@ -63,7 +65,10 @@ public class MainActivity extends ActionBarActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Contact.add(new ContactActivity(nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), ImageURI));
+                ContactActivity contactActivity = new ContactActivity(dbHandler.getListCount(), String.valueOf(nameTxt.getText()), String.valueOf(phoneTxt.getText()), String.valueOf(emailTxt.getText()), String.valueOf(addressTxt.getText()), ImageURI);
+                //dbHandler.Create(contactActivity);
+                Contact.add(contactActivity);
+                //Contact.add(new ContactActivity(0, nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), ImageURI));
                 PopulateList();
                 Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + " Has Been Added", Toast.LENGTH_SHORT).show();
             }
@@ -95,6 +100,18 @@ public class MainActivity extends ActionBarActivity {
                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
             }
         });
+
+       /* List<ContactActivity> addAbleCampus = dbHandler.getAll();
+
+        int contactCount = dbHandler.getListCount();
+
+        for(int i = 0; i < contactCount; i++)
+        {
+            Contact.add(addAbleCampus.get(i));
+        }
+
+        if(!addAbleCampus.isEmpty())
+            PopulateList();*/
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
