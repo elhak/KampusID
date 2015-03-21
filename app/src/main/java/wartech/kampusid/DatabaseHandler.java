@@ -33,7 +33,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + "(" + KEY_ID + "INTEGER PRIMARY_KEY AUTOINCREMENT," + KEY_NAME + "TEXT," + KEY_PHONE + "TEXT," + KEY_EMAIL + "TEXT," + KEY_ADDRESS + "TEXT," + KEY_IMAGEURI + "TEXT)");
+        db.execSQL("CREATE TABLE " + TABLE_NAME + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PHONE + " TEXT," + KEY_EMAIL + " TEXT," + KEY_ADDRESS + " TEXT," + KEY_IMAGEURI + " TEXT)");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
@@ -63,7 +63,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_NAME,new String[] {KEY_ID, KEY_NAME, KEY_PHONE, KEY_EMAIL, KEY_ADDRESS, KEY_IMAGEURI}, KEY_ID + "=?", new String[] {String.valueOf(id)}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME,new String[] {KEY_ID, KEY_NAME, KEY_PHONE, KEY_EMAIL, KEY_ADDRESS, KEY_IMAGEURI}, KEY_ID + " =? ", new String[] {String.valueOf(id)}, null, null, null, null);
 
         if(cursor != null)
         {
@@ -79,7 +79,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void delete(ContactActivity contact)
     {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_NAME,KEY_ID + "=?",new String[] {String.valueOf(contact.getId()) });
+        db.delete(TABLE_NAME,KEY_ID + " =? ",new String[] {String.valueOf(contact.getId()) });
         db.close();
     }
 
@@ -87,11 +87,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-       // int count = cursor.getCount();
-        db.close()1
+        int count = cursor.getCount();
+        db.close();
         cursor.close();
 
-        return cursor.getCount();
+        return count;
     }
 
     public int Update(ContactActivity contact)
@@ -104,8 +104,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_EMAIL, contact.getEmail());
         values.put(KEY_ADDRESS, contact.getAddress());
         values.put(KEY_IMAGEURI, contact.getImage().toString());
+        int rowsAffected = db.update(TABLE_NAME, values, KEY_ID + "=?", new String[] {String.valueOf(contact.getId())} );
+        db.close();
 
-        return db.update(TABLE_NAME, values, KEY_ID + "=?", new String[] {String.valueOf(contact.getId())} );
+        return rowsAffected;
     }
 
     public List<ContactActivity> getAll()
@@ -117,11 +119,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst())
         {
+            ContactActivity contact;
             do {
-                ContactActivity contact = new ContactActivity(Integer.parseInt(cursor.getString(0)),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4), Uri.parse(cursor.getString(5)));
-                contacts.add(contact);
+                contacts.add(new ContactActivity(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), Uri.parse(cursor.getString(5))));
             }while(cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
+
         return contacts;
     }
 }

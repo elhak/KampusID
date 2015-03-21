@@ -1,16 +1,17 @@
 package wartech.kampusid;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,13 +27,17 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final int EDIT = 0, DELETE = 1;
+
     private EditText nameTxt, phoneTxt, emailTxt, addressTxt;
     private TabHost tabHost;
     List<ContactActivity> Contact = new ArrayList<ContactActivity>();
     private ListView kampusListView;
     private ImageView kampusImageImgView;
-    Uri ImageURI = Uri.parse("android.resource://wartech.kampusid/drawable/icon.png");
+    Uri ImageURI = Uri.parse("android.resource://wartech.kampusid/drawable/topi.png");
     DatabaseHandler dbHandler;
+    int longClickedItemIndex;
+    ArrayAdapter<ContactActivity> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,16 @@ public class MainActivity extends ActionBarActivity {
         kampusListView = (ListView) findViewById(R.id.listKampus);
         kampusImageImgView = (ImageView) findViewById(R.id.imgKampusView);
         dbHandler = new DatabaseHandler(getApplicationContext());
+
+        registerForContextMenu(kampusListView);
+
+        kampusListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                longClickedItemIndex = position;
+                return false;
+            }
+        });
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
@@ -65,12 +80,17 @@ public class MainActivity extends ActionBarActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContactActivity contactActivity = new ContactActivity(dbHandler.getListCount(), String.valueOf(nameTxt.getText()), String.valueOf(phoneTxt.getText()), String.valueOf(emailTxt.getText()), String.valueOf(addressTxt.getText()), ImageURI);
-                //dbHandler.Create(contactActivity);
-                Contact.add(contactActivity);
-                //Contact.add(new ContactActivity(0, nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), ImageURI));
-                PopulateList();
-                Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + " Has Been Added", Toast.LENGTH_SHORT).show();
+                ContactActivity contactActivity = new ContactActivity(dbHandler.getListCount(),String.valueOf(nameTxt.getText()), String.valueOf(phoneTxt.getText()), String.valueOf(emailTxt.getText()), String.valueOf(addressTxt.getText()), ImageURI);
+                if(!contactExist(contactActivity)) {
+                    dbHandler.Create(contactActivity);
+                    Contact.add(contactActivity);
+                    //Contact.add(new ContactActivity(0, nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), ImageURI));
+                    //PopulateList();
+                    arrayAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), String.valueOf(nameTxt.getText()) + " Has Been Added", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(getApplicationContext(), String.valueOf(nameTxt.getText()) + " Already Exist ", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -82,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                addBtn.setEnabled(!nameTxt.getText().toString().trim().isEmpty());
+                addBtn.setEnabled(String.valueOf(nameTxt.getText()).toString().trim().length() > 0);
             }
 
             @Override
@@ -101,17 +121,52 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-       /* List<ContactActivity> addAbleCampus = dbHandler.getAll();
+        if (dbHandler.getListCount() != 0)
+            Contact.addAll(dbHandler.getAll());
 
-        int contactCount = dbHandler.getListCount();
+        PopulateList();
+    }
+
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuinfo)
+    {
+        super.onCreateContextMenu(menu, view, menuinfo);
+
+        menu.setHeaderIcon(R.drawable.pencilicon);
+        menu.setHeaderTitle("Option");
+        menu.add(Menu.NONE, EDIT, Menu.NONE, "Edit");
+        menu.add(Menu.NONE, DELETE, Menu.NONE, "Delete");
+
+    }
+
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case EDIT :
+                    //TODO : Implement Editing Method
+                break;
+
+            case DELETE :
+                    dbHandler.delete(Contact.get(longClickedItemIndex));
+                    Contact.remove(longClickedItemIndex);
+                    arrayAdapter.notifyDataSetChanged();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private boolean contactExist(ContactActivity contact)
+    {
+        String name = contact.getName();
+        int contactCount = Contact.size();
 
         for(int i = 0; i < contactCount; i++)
         {
-            Contact.add(addAbleCampus.get(i));
+            if(name.compareToIgnoreCase(Contact.get(i).getName()) == 0){
+                return true;
+            }
         }
-
-        if(!addAbleCampus.isEmpty())
-            PopulateList();*/
+        return false;
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
@@ -125,8 +180,8 @@ public class MainActivity extends ActionBarActivity {
 
     private void PopulateList()
     {
-        ArrayAdapter<ContactActivity> adapter = new ContactListAdapter();
-        kampusListView.setAdapter(adapter);
+        arrayAdapter = new ContactListAdapter();
+        kampusListView.setAdapter(arrayAdapter);
     }
 
     private class ContactListAdapter extends ArrayAdapter<ContactActivity>
